@@ -1,18 +1,25 @@
 import numpy
 from numpy import random
-from amuse.lab import *
 from amuse.ext.orbital_elements import generate_binaries, new_binary_from_orbital_elements
 from amuse.ic import make_planets_oligarch
 from amuse.community.fractalcluster.interface import new_fractal_cluster_model
-import random
+
+from amuse.lab import units, nbody_system
+from amuse.lab import new_salpeter_mass_distribution
+from amuse.lab import write_set_to_file, read_set_from_file
+from amuse.lab import new_plummer_model
+from amuse.lab import Particles
+from amuse.lab import constants
+from amuse.lab import new_kroupa_mass_distribution
+
 
 
 def ZAMS_radius(mass):
     log_mass = numpy.log10(mass.value_in(units.MSun))
     mass_sq = (mass.value_in(units.MSun))**2
-    alpha = 0.08353 + 0.0565*log_mass
-    beta  = 0.01291 + 0.2226*log_mass
-    gamma = 0.1151 + 0.06267*log_mass
+    0.08353 + 0.0565*log_mass
+    0.01291 + 0.2226*log_mass
+    0.1151 + 0.06267*log_mass
     r_zams = pow(mass.value_in(units.MSun), 1.25) * (0.1148 + 0.8604*mass_sq) / (0.04651 + mass_sq)
 
     return r_zams | units.RSun

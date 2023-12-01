@@ -1,18 +1,23 @@
 import numpy
 from numpy import random
-from amuse.lab import *
 from amuse.ext.orbital_elements import generate_binaries, new_binary_from_orbital_elements
 from amuse.ic import make_planets_oligarch
 from amuse.community.fractalcluster.interface import new_fractal_cluster_model
-import random
 
+from amuse.lab import units, nbody_system
+from amuse.lab import new_salpeter_mass_distribution
+from amuse.lab import write_set_to_file
+from amuse.lab import new_plummer_model
+from amuse.lab import Particles
+from amuse.lab import constants
+from amuse.lab import new_kroupa_mass_distribution
 
 def ZAMS_radius(mass):
     log_mass = numpy.log10(mass.value_in(units.MSun))
     mass_sq = (mass.value_in(units.MSun))**2
-    alpha = 0.08353 + 0.0565*log_mass
-    beta  = 0.01291 + 0.2226*log_mass
-    gamma = 0.1151 + 0.06267*log_mass
+    0.08353 + 0.0565*log_mass
+    0.01291 + 0.2226*log_mass
+    0.1151 + 0.06267*log_mass
     r_zams = pow(mass.value_in(units.MSun), 1.25) * (0.1148 + 0.8604*mass_sq) / (0.04651 + mass_sq)
 
     return r_zams | units.RSun
@@ -328,6 +333,8 @@ def make_isolated_jumbos(bodies,
 def new_option_parser():
     from amuse.units.optparse import OptionParser
     result = OptionParser()
+    result.add_option("--Nstars", dest="Nstars", type="int",default = 2500,
+                      help="number of stars [%default]")
     result.add_option("--Njumbos", dest="Njumbos", type="int",default = 5,
                       help="number of JuMBOs [%default]")
     result.add_option("--model", dest="jumbo_model", type="int",default = "classic",
@@ -346,27 +353,27 @@ def new_option_parser():
 if __name__ in ('__main__', '__plot__'):
     o, arguments  = new_option_parser().parse_args()
 
-    masses = new_kroupa_mass_distribution(N, mass_min=Mmin, mass_max=Mmax)
+    masses = new_kroupa_mass_distribution(o.Nstars, mass_min=o.mmin, mass_max=o.mmax)
     Rvir = 1|units.pc
     converter=nbody_system.nbody_to_si(masses.sum(), Rvir)
-    stars = new_plummer_model(10, convert_nbody=converter)
+    bodies = new_plummer_model(10, convert_nbody=converter)
     bodies.name = "star"
     
-    if Njumbos>0:
-        jumbos = make_isolated_jumbos(stars, o.Njumbos)
+    if o.Njumbos>0:
+        jumbos = make_isolated_jumbos(bodies, o.Njumbos)
     else:
         jumbos = bodies.random_sample(o.Njumbos)
         q = numpy.sqrt(numpy.random.uniform(0.5**2, 1, o.Njumbos))
         #q = numpy.random.uniform(0.5, 1, o.Njumbos)
-        jumbo.mass = new_salpeter_mass_distribution(o.Njumbos,
-                                                 1|units.MJupiter,
-                                                 20|units.MJupiter, alpha=-1.2)
+        jumbos.mass = new_salpeter_mass_distribution(o.Njumbos,
+                                                     1|units.MJupiter,
+                                                     20|units.MJupiter, alpha=-1.2)
         jumbos.name = "JuMBOs"
         jumbos.radius = 1 | units.RJupiter
         if o.arxive==0:        
-            jumbos = make_outer_planetary_systems(stars)
+            jumbos = make_outer_planetary_systems(bodies)
         else:
-            jumbos = make_planetplanet(stars)
+            jumbos = make_planetplanet(bodies)
     
-    stars.add_particles(jumbos)
-    write_set_to_file(stars, o.outfile, "amuse", close_file=True)
+    bodies .add_particles(jumbos)
+    write_set_to_file(bodies, o.outfile, "amuse", close_file=True)

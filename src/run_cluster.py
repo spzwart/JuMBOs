@@ -1,14 +1,14 @@
 import sys
 import numpy
-from numpy import random
-from amuse.lab import *
-from amuse.io import store
-from amuse.community.seba.interface import SeBa
+from amuse.lab import units, nbody_system, zero
+from amuse.lab import Particles
+from amuse.lab import new_kroupa_mass_distribution
 from amuse.ext.LagrangianRadii import LagrangianRadii
-from amuse.community.petar.interface import Petar
 from amuse.community.fractalcluster.interface import new_fractal_cluster_model
-
-from matplotlib import pyplot as plt
+from amuse.lab import new_plummer_model
+from amuse.lab import ph4
+from amuse.lab import write_set_to_file
+from amuse.lab import  new_salpeter_mass_distribution
 from make_jumbos import make_outer_planetary_systems
 from make_jumbos import make_isolated_jumbos
 from make_jumbos import make_planetplanet
@@ -18,9 +18,9 @@ from make_jumbos import make_singletons
 def ZAMS_radius(mass):
     log_mass = numpy.log10(mass.value_in(units.MSun))
     mass_sq = (mass.value_in(units.MSun))**2
-    alpha = 0.08353 + 0.0565*log_mass
-    beta  = 0.01291 + 0.2226*log_mass
-    gamma = 0.1151 + 0.06267*log_mass
+    0.08353 + 0.0565*log_mass
+    0.01291 + 0.2226*log_mass
+    0.1151 + 0.06267*log_mass
     r_zams = pow(mass.value_in(units.MSun), 1.25) * (0.1148 + 0.8604*mass_sq) / (0.04651 + mass_sq)
     return r_zams | units.RSun
 
@@ -118,6 +118,7 @@ def make_initial_cluster(Nstars, Njumbos, Rvir, Fd, jumbo_model,
     bodies.name = "star"
     bodies.type = "star"
     bodies.radius = ZAMS_radius(bodies.mass)
+    jumbos = Particles(0)
     if jumbo_model=="freefloaters":
         JuMBOs = bodies.random_sample(Njumbos)
         JuMBOs.mass = new_salpeter_mass_distribution(Njumbos,
@@ -145,7 +146,7 @@ def make_initial_cluster(Nstars, Njumbos, Rvir, Fd, jumbo_model,
         print(bodies[bi+int(Njumbos/2)].mass.in_(units.MSun))
         host_stars = bodies[bi-int(Njumbos/2):bi+int(Njumbos/2)]
         host_stars.name = "host"
-        nhost_stars = len(host_stars)
+        len(host_stars)
         print(f"Mass limit for jumbos: {host_stars.mass.min().in_(units.MSun)}, {host_stars.mass.max().in_(units.MSun)}")
         if jumbo_model=="circum_stellar":
             jumbos = make_planetplanet(bodies, a1, a2, jumbo_mass_function)
@@ -155,7 +156,7 @@ def make_initial_cluster(Nstars, Njumbos, Rvir, Fd, jumbo_model,
             jumbos = make_outer_planetary_systems(bodies)
         else:
             print(f"No Jumbo model selected: {jumbo_model}")
-    #print(jumbos)
+    print(jumbos)
     bodies.add_particles(jumbos)
     #from plot_cluster import print_planetary_orbits
     #print_planetary_orbits(bodies.copy())
@@ -195,9 +196,8 @@ def  run_cluster(bodies, Rvir, t_end, dt):
     filename = "jumbos_i{0:04}.amuse".format(index)
     write_set_to_file(bodies, filename, 'amuse',
                           close_file=True, overwrite_file=True)
-    E_init = gravity.kinetic_energy + gravity.potential_energy
+    gravity.kinetic_energy + gravity.potential_energy
     
-    Nsn = 0
     dE_coll = zero
     time = zero
 
