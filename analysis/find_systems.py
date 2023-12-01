@@ -3,22 +3,10 @@ from matplotlib import pyplot as plt
 
 from scipy.stats import iqr
 from amuse.units import units
-from amuse.units import nbody_system
-from amuse.ic.plummer import new_plummer_model
-from amuse.community.ph4.interface import ph4
-from amuse.plot import scatter
-from amuse.io import store
-from amuse.community.seba.interface import SeBa
-from amuse.ext.LagrangianRadii import LagrangianRadii
-from amuse import datamodel
-from amuse.ext.evrard_test import uniform_unit_sphere
-from amuse.lab import new_kroupa_mass_distribution
 from amuse.lab import read_set_from_file
 from amuse.lab import Particle, Particles, constants
-from amuse.lab import write_set_to_file, read_set_from_file
 
 from amuse.ext.orbital_elements import get_orbital_elements_from_arrays
-from amuse.ext.orbital_elements import orbital_elements_from_binary
 
 def rounded_means_quartiles(data):
     M25 =iqr(data, rng=(25, 50))
@@ -58,7 +46,7 @@ def is_this_binary_planet_orbiting_a_star(stars, planet):
     return a_mp, e_mp
 
 def free_floating_planets(bodies):
-    single_freefloatrs = bodies[bodies.type=="planet"].copy()
+    single_freefloaters = bodies[bodies.type=="planet"].copy()
     for bi in bodies:
         if len(bi.companions)>0:
             for ci in bi.companions:
@@ -332,7 +320,7 @@ if __name__=="__main__":
         print("Not enough (s,p) to plot distro")
 
     try:
-        print(f"Npp=", len(ecc['pp']))
+        print("Npp=", len(ecc['pp']))
         e = np.sort(ecc['pp'])
         #print("Eccentricities (p,p):", e)
         f = np.linspace(0, 1, len(e))

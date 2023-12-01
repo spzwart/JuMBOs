@@ -1,27 +1,14 @@
 import numpy as np
-from math import sqrt
 
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 from amuse.units import units
-from amuse.units import nbody_system
-from amuse.ic.plummer import new_plummer_model
-from amuse.community.ph4.interface import ph4
-from amuse.plot import scatter
-from amuse.io import store
-from amuse.community.seba.interface import SeBa
-from amuse.ext.LagrangianRadii import LagrangianRadii
-from amuse import datamodel
-from amuse.ext.evrard_test import uniform_unit_sphere
-from amuse.lab import new_kroupa_mass_distribution
 from amuse.lab import read_set_from_file
 from amuse.lab import Particle, Particles, constants
-from amuse.lab import write_set_to_file, read_set_from_file
+from amuse.lab import write_set_to_file
 
 from amuse.ext.orbital_elements import get_orbital_elements_from_arrays
                                                  
-import random
 
-from matplotlib import pyplot as plt
 def orbital_elements_of_binary(primary, secondary):
     b = Particles(1)
     b[0].mass = primary.mass
@@ -88,7 +75,6 @@ def find_host_stellar_companion(jumbos, stars):
 def find_binary_planets(bodies):
 
     jumbos = bodies[bodies.type=="planet"]
-    stars = bodies - jumbos
     all_jumbos = Particles()
     single_planets = jumbos.copy()
     #find nearest jumbo
@@ -140,8 +126,6 @@ def print_planetary_orbits(bodies):
     jumbos = bodies[bodies.type=="planet"]
     stars = bodies[bodies.name=="host"]
     primaries = Particles()
-    sma = [] | units.au
-    ecc = []
     for si in stars:
         total_masses = jumbos.mass + si.mass
         rel_pos = jumbos.position-si.position
@@ -186,34 +170,6 @@ def print_planetary_orbits(bodies):
     plt.show()
     """
     return primaries
-    
-def plot_snapshot(bodies):
-
-    jumbos = bodies[bodies.name=="JuMBOs"]
-    hosts = bodies[bodies.name=="host"]
-    stars = bodies - hosts - jumbos
-
-    bound_jumbos = find_jumbo_orbits(bodies.copy())
-    triples = find_host_stellar_companion(bound_jumbos, stars+hosts)
-    primaries = print_planetary_orbits(bodies.copy())
-    
-    m = 100*stars.mass/stars.mass.max()
-    pyplot.scatter(stars.x.value_in(units.parsec), stars.y.value_in(units.parsec),
-                   s=m, label="single stars", c='k', alpha= 0.2)
-    if len(hosts)>0:
-        m = 100*hosts.mass/hosts.mass.max()
-        pyplot.scatter(hosts.x.value_in(units.parsec),
-                       hosts.y.value_in(units.parsec),
-                       s=m, c='b', label="host stars")
-    if len(jumbos)>0:
-        m = 10*jumbos.mass/jumbos.mass.max()
-        pyplot.scatter(jumbos.x.value_in(units.parsec), jumbos.y.value_in(units.parsec),
-                       s=m, c='r', label="jumbos")
-    pyplot.xlabel('X [pc]')
-    pyplot.ylabel('Y [pc]')
-    pyplot.legend()
-  
-    pyplot.show()
 
 def find_nearest_neighbor_planets(planets):
 
