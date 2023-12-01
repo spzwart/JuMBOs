@@ -1,24 +1,12 @@
 import numpy as np
-from math import sqrt
 
 from matplotlib import pyplot
 from amuse.units import units
-from amuse.units import nbody_system
-from amuse.ic.plummer import new_plummer_model
-from amuse.community.ph4.interface import ph4
-from amuse.plot import scatter
-from amuse.io import store
-from amuse.community.seba.interface import SeBa
-from amuse.ext.LagrangianRadii import LagrangianRadii
-from amuse import datamodel
-from amuse.ext.evrard_test import uniform_unit_sphere
-from amuse.lab import new_kroupa_mass_distribution
 from amuse.lab import read_set_from_file
 from amuse.lab import Particle, Particles, constants
 
 from amuse.ext.orbital_elements import get_orbital_elements_from_arrays
                                                  
-import random
 
 from matplotlib import pyplot as plt
 def orbital_elements_of_binary(primary, secondary):

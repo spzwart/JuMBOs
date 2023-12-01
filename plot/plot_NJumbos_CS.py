@@ -1,6 +1,4 @@
 import numpy as np
-from amuse.units import units
-from amuse.plot import plot
 from matplotlib import pyplot as plt
 
 import pandas as pd
